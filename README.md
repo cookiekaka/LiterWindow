@@ -10,8 +10,7 @@ A literature data visualization system based on Echarts.js
 ●合作模块：该模块包括各机构单位的合作网络图。   
 
 ●基金模块：该模块包括各作者每年的基金数量气泡图、各机构单位每年的基金数量气泡图和所收集文献在全国范围内基金数量的地域分布图。所有图表均可进行数据更改、区域缩放和图片另存为，其中地域分布图还可进行矩形选择和圈选操作，可根据需要放大观察区域。    
-    
-	![Image text](https://github.com/cookiekaka/LiterWindow/raw/master/imgs/1.jpg)    
+![Image text](https://github.com/cookiekaka/LiterWindow/raw/master/imgs/1.jpg)    
 ![Image text](https://github.com/cookiekaka/LiterWindow/raw/master/imgs/2.jpg)
 
 
