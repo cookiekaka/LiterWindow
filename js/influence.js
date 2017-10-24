@@ -308,112 +308,65 @@ window.onresize = myChart.resize;//图表自适应窗口大小
 //main4
 var myChart = echarts.init(document.getElementById('main'));
 // 指定图表的配置项和数据								
-var nodes = [];
-var links = [];
-var constMaxDepth = 2;
-var constMaxChildren = 7;
-var constMinChildren = 4;
-var constMaxRadius = 6;
-var constMinRadius = 2;
-function rangeRandom(min, max) {
-	return Math.random() * (max - min) + min;
-}
-function createRandomNode(depth) {
-	var node = {
-		name : 'NODE_' + nodes.length,
-		value : rangeRandom(constMinRadius, constMaxRadius),
-		// Custom properties
-		id : nodes.length,
-		depth : depth,
-		category : depth === constMaxDepth ? 0 : 1
-	}
-	nodes.push(node);
+var uploadedDataURL = "../datas/influence.gexf";
+myChart.showLoading();
+$.get(uploadedDataURL, function (xml) {
+    myChart.hideLoading();
 
-	return node;
-}
-function forceMockThreeData() {
-	var depth = 0;
-	var rootNode = {
-		name : 'ROOT',
-		value : rangeRandom(constMinRadius, constMaxRadius),
-		// Custom properties
-		id : 0,
-		depth : 0,
-		category : 2
-	}
-	nodes.push(rootNode);
-	function mock(parentNode, depth) {
-		var nChildren = Math.round(rangeRandom(constMinChildren, constMaxChildren));
-		
-		for (var i = 0; i < nChildren; i++) {
-			var childNode = createRandomNode(depth);
-			links.push({
-				source : parentNode.id,
-				target : childNode.id,
-				weight : 1 
-			});
-			if (depth < constMaxDepth) {
-				mock(childNode, depth + 1);
-			}
-		}
-	}
-	mock(rootNode, 0);
-}
-forceMockThreeData();
-option = {
-	title : {
-		text: 'Force',
-		subtext: 'Force-directed tree',
-		x:'right',
-		y:'bottom'
-	},
-	tooltip : {
-		trigger: 'item',
-		formatter: '{a} : {b}'
-	},
-	toolbox: {
-		show : true,
-		feature : {
-			restore : {show: true},
-			magicType: {show: true, type: ['force', 'chord']},
-			saveAsImage : {show: true}
-		}
-	},
-	series : [
-		{
-			type:'force',
-			name : "Force tree",
-			ribbonType: false,
-			categories : [
-				{
-					name: '叶子节点'
-				},
-				{
-					name: '非叶子节点'
-				},
-				{
-					name: '根节点'
-				}
-			],
-			itemStyle: {
-				normal: {
-					label: {
-						show: false
-					},
-					nodeStyle : {
-						brushType : 'both',
-						borderColor : 'rgba(255,215,0,0.6)',
-						borderWidth : 1
-					}
-				}
-			},
-			minRadius : constMinRadius,
-			maxRadius : constMaxRadius,
-			coolDown: 0.995,
-			steps: 5,
-			nodes : nodes,
-			links : links,
-			steps: 1
-		}
-	]
-};
+    var graph = echarts.dataTool.gexf.parse(xml);
+    var categories = [];
+    for (var i = 0; i < 9; i++) {
+        categories[i] = {
+            name: '文献' + i
+        };
+    }
+    graph.nodes.forEach(function (node) {
+        node.itemStyle = null;
+        node.value = node.symbolSize;
+        node.label = {
+            normal: {
+                show: node.symbolSize > 30
+            }
+        };
+        node.category = node.attributes.modularity_class;
+    });
+    option = {
+        title: {
+            subtext: 'Default layout',
+            top: 'bottom',
+            left: 'right'
+        },
+        tooltip: {},
+        legend: [{
+            // selectedMode: 'single',
+            data: categories.map(function (a) {
+                return a.name;
+            })
+        }],
+        animationDuration: 1500,
+        animationEasingUpdate: 'quinticInOut',
+        series : [
+            {
+                type: 'graph',
+                layout: 'none',
+                data: graph.nodes,
+                links: graph.links,
+                categories: categories,
+                roam: true,
+                label: {
+                    normal: {
+                        position: 'right',
+                        formatter: '{b}'
+                    }
+                },
+                lineStyle: {
+                    normal: {
+                        curveness: 0.3
+                    }
+                }
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+}, 'xml');

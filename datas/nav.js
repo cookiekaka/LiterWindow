@@ -13,12 +13,7 @@ var navs = [ {
 	"icon": "&#x1002;",
 	"href": "development.html",
 	"spread": false,
-}, {
-	"title": "合作",
-	"icon": "fa-address-book",
-	"href": "cooperate.html",
-	"spread": false,
-}, {
+},{
 	"title": "基金",
 	"icon": "fa-stop-circle",
 	"href": "funds.html",
